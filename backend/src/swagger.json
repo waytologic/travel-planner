@@ -1,0 +1,414 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sample API",
+    "description": "A sample API to demonstrate OpenAPI specification",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:1947",
+      "description": "Local server"
+    }
+  ],
+  "api": ["src/**/*.js"],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Everything about users"
+    },
+    {
+      "name": "Travel",
+      "description": "Everything about Travel planner"
+    }
+  ],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User register",
+        "description": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/UserSchema"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "66b84a7e311cbda81df90f68"
+                        }
+                      },
+                      "required": ["id"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User login",
+        "description": "Authenticate a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "User email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "User password",
+                    "example": "Password@123"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Authentication token"
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "User name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Please check input data"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users",
+        "description": "Load all users in the users collection.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All users loaded successfully"
+          },
+          "400": {
+            "description": "No token provided"
+          }
+        }
+      }
+    },
+    "/travel/getallplan": {
+      "get": {
+        "tags": ["Travel"],
+        "summary": "Get all the Travel planner",
+        "description": "Load all Travel plan for the users collection.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All users loaded successfully"
+          },
+          "400": {
+            "description": "No token provided"
+          }
+        }
+      }
+    },
+    "/travel/trips": {
+      "post": {
+        "tags": ["Travel"],
+        "summary": "Create user Travel planner",
+        "description": "Create a new travel planner",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TravelSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User Created the Travel planner successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/TravelSchema"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "66b84a7e311cbda81df90f68"
+                        }
+                      },
+                      "required": ["id"]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data"
+          }
+        }
+      }
+    },    
+    "/travel/trips/{id}": {
+			"get": {
+				"tags": ["Travel"],
+				"summary": "Get user by user name",
+				"description": "",
+				"operationId": "getUserByName",
+				"parameters": [
+					{
+						"name": "username",
+						"in": "path",
+						"description": "The name that needs to be fetched. Use user1 for testing. ",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid username supplied"
+					},
+					"404": {
+						"description": "User not found"
+					}
+				}
+			},
+			"put": {
+				"tags": ["Travel"],
+				"summary": "Update user",
+				"description": "This can only be done by the logged in user.",
+				"operationId": "updateUser",
+				"parameters": [
+					{
+						"name": "username",
+						"in": "path",
+						"description": "name that need to be deleted",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Update an existent user in the store",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						},
+						"application/xml": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						},
+						"application/x-www-form-urlencoded": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					}
+				},
+				"responses": {
+					"default": {
+						"description": "successful operation"
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Travel"],
+				"summary": "Delete user",
+				"description": "This can only be done by the logged in user.",
+				"operationId": "deleteUser",
+				"parameters": [
+					{
+						"name": "username",
+						"in": "path",
+						"description": "The name that needs to be deleted",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"400": {
+						"description": "Invalid username supplied"
+					},
+					"404": {
+						"description": "User not found"
+					}
+				}
+			}
+		}    ,
+    "/api/logout": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User logout",
+        "description": "Logout a user by invalidating the provided token.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          },
+          "400": {
+            "description": "No token provided"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserSchema": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "User name",
+            "example": "Test"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "Password@123"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User phone number",
+            "example": "9551766353"
+          }
+        },
+        "required": ["username", "email", "password", "phone"]
+      },      
+      "TravelSchema": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "string",
+            "description": "Destination information",
+            "example": "Madurai"
+          },
+          "startDate": {
+            "type": "date",
+            "description": "planning date ",
+            "example": "08/11/2024"
+          },
+          "endDate": {
+            "type": "date",
+            "description": "planning date ",
+            "example": "08/11/2024"
+          },         
+          "notes": {
+            "type": "string",
+            "description": "User added notes",
+            "example": "I have plan to go Madurai"
+          }
+        },
+        "required": ["destination","startDate", "notes", "endDate"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
